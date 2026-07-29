@@ -1,0 +1,168 @@
+<svg viewBox="0 0 1620 1140" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <style>
+      .title{font-size:26px;font-weight:700;fill:#1a1a2e}
+      .sub{font-size:13.5px;fill:#555}
+      .zone{font-size:14px;font-weight:700}
+      .bt{font-size:13px;font-weight:700;fill:#12203a}
+      .bd{font-size:10.5px;fill:#3a4a63}
+      .chip{font-size:11.5px;fill:#fff}
+      .lbl{font-size:11px;fill:#444}
+      .env{font-size:11px;fill:#2b3a55}
+    </style>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 z" fill="#8a94a6"/></marker>
+  </defs>
+  <rect width="1620" height="1140" fill="#f4f6fa"/>
+  <text x="40" y="46" class="title">McCain · Agentic Order Status — Databricks-Native Reference Architecture</text>
+  <text x="40" y="70" class="sub">Defense-in-depth request lifecycle on Databricks (Mosaic AI, Genie, Unity Catalog) + Azure · Dev → QA → Prod via Databricks Asset Bundles · guardrails, governance, observability &amp; security by design</text>
+
+  <!-- Legend -->
+  <g transform="translate(1180,34)">
+    <rect x="0" y="0" width="16" height="11" rx="3" fill="#0078D4"/><text x="21" y="10" class="lbl">Azure</text>
+    <rect x="70" y="0" width="16" height="11" rx="3" fill="#FF3621"/><text x="91" y="10" class="lbl">Databricks</text>
+    <rect x="176" y="0" width="16" height="11" rx="3" fill="#0AA1DD"/><text x="197" y="10" class="lbl">SAP</text>
+    <rect x="236" y="0" width="16" height="11" rx="3" fill="#c0392b"/><text x="257" y="10" class="lbl">Control gate</text>
+  </g>
+
+  <!-- Environments strip -->
+  <g transform="translate(40,84)">
+    <rect width="1540" height="28" rx="7" fill="#eef1f8" stroke="#b9c2d6"/>
+    <text x="16" y="19" class="env">ENVIRONMENTS · Dev (mccain_dev, rg-ordstatus-dev — SQL 2X-Small auto-stop, Serving scale-to-zero) → QA (mccain_qa — SQL X-Small, 1 warm) → Prod (mccain_prod — SQL Small–Medium autoscale, 1–2 warm, multi-AZ) · promoted via Databricks Asset Bundles + Repos (IaC)</text>
+  </g>
+
+  <text x="40" y="134" class="zone" fill="#12203a">REQUEST PATH — every hop is a control point</text>
+
+  <!-- pipeline stages -->
+  <!-- stage template: box 200 wide, 150 tall, y=150 -->
+  <g>
+    <!-- 1 User -->
+    <g transform="translate(40,150)">
+      <rect width="200" height="150" rx="10" fill="#eaf3ff" stroke="#0078D4"/>
+      <text x="14" y="26" class="bt">① User &amp; sign-in</text>
+      <text x="14" y="48" class="bd">CS agent (MCX) or</text>
+      <text x="14" y="66" class="bd">Databricks Apps (UI)</text>
+      <text x="14" y="84" class="bd">Microsoft Entra ID SSO</text>
+      <text x="14" y="100" class="bd">Role/scope from identity</text>
+      <text x="14" y="124" class="bd" font-style="italic">(SCIM) · Zero-trust entry</text>
+    </g>
+    <!-- 2 Gateway -->
+    <g transform="translate(258,150)">
+      <rect width="200" height="150" rx="10" fill="#fdeeee" stroke="#c0392b"/>
+      <text x="14" y="26" class="bt">② API gateway</text>
+      <text x="14" y="48" class="bd">Rate limiting (per user</text>
+      <text x="14" y="64" class="bd">/ role / endpoint)</text>
+      <text x="14" y="82" class="bd">Token &amp; request quotas</text>
+      <text x="14" y="100" class="bd">WAF · payload size cap</text>
+      <text x="14" y="124" class="bd">Concurrency admission</text>
+    </g>
+    <!-- 3 Prompt shield -->
+    <g transform="translate(476,150)">
+      <rect width="200" height="150" rx="10" fill="#fdeeee" stroke="#c0392b"/>
+      <text x="14" y="26" class="bt">③ Prompt Shield</text>
+      <text x="14" y="48" class="bd">Azure AI Content Safety</text>
+      <text x="14" y="66" class="bd">Jailbreak detection</text>
+      <text x="14" y="84" class="bd">Indirect prompt-</text>
+      <text x="14" y="100" class="bd">injection scan (data too)</text>
+      <text x="14" y="124" class="bd">PII / topic screen</text>
+    </g>
+    <!-- 4 Agent -->
+    <g transform="translate(694,150)">
+      <rect width="200" height="150" rx="10" fill="#fff3f1" stroke="#FF3621"/>
+      <text x="14" y="26" class="bt">④ Agent</text>
+      <text x="14" y="48" class="bd">Mosaic AI Agent Fmwk</text>
+      <text x="14" y="66" class="bd">Databricks Model Serving</text>
+      <text x="14" y="84" class="bd">Mosaic AI Gateway → Azure</text>
+      <text x="14" y="100" class="bd">OpenAI (small→large) + embed</text>
+      <text x="14" y="124" class="bd">Deterministic routing</text>
+    </g>
+    <!-- 5 Tools + DB shield -->
+    <g transform="translate(912,150)">
+      <rect width="200" height="150" rx="10" fill="#fff3f1" stroke="#FF3621"/>
+      <text x="14" y="26" class="bt">⑤ Tools + DB Shield</text>
+      <text x="14" y="48" class="bd">Genie (NL→SQL) · Genie space</text>
+      <text x="14" y="66" class="bd">SQL AST validated: read-only,</text>
+      <text x="14" y="84" class="bd">table allow-list, LIMIT/timeout</text>
+      <text x="14" y="100" class="bd">Policy RAG · Vector Search</text>
+      <text x="14" y="124" class="bd">(later phase) · SAP fallback</text>
+    </g>
+    <!-- 6 Data -->
+    <g transform="translate(1130,150)">
+      <rect width="200" height="150" rx="10" fill="#fdece9" stroke="#FF3621"/>
+      <text x="14" y="26" class="bt">⑥ Governed data</text>
+      <text x="14" y="48" class="bd">Serverless SQL Warehouse</text>
+      <text x="14" y="66" class="bd">Unity Catalog: row filter</text>
+      <text x="14" y="84" class="bd">(sales org), column mask</text>
+      <text x="14" y="100" class="bd">(price/PII) · EDP on ADLS</text>
+      <text x="14" y="124" class="bd">Gen2 (~2h refresh) · SAP src</text>
+    </g>
+    <!-- 7 Output guardrails -->
+    <g transform="translate(1348,150)">
+      <rect width="232" height="150" rx="10" fill="#fdeeee" stroke="#c0392b"/>
+      <text x="14" y="26" class="bt">⑦ Output guardrails</text>
+      <text x="14" y="48" class="bd">Grounding &amp; citation check</text>
+      <text x="14" y="66" class="bd">PII redaction · toxicity</text>
+      <text x="14" y="84" class="bd">Field-level restriction</text>
+      <text x="14" y="100" class="bd">msg (not-permitted)</text>
+      <text x="14" y="124" class="bd">Stream cited answer + SQL</text>
+    </g>
+    <!-- arrows -->
+    <g stroke="#8a94a6" stroke-width="2" marker-end="url(#ar)">
+      <line x1="240" y1="225" x2="256" y2="225"/>
+      <line x1="458" y1="225" x2="474" y2="225"/>
+      <line x1="676" y1="225" x2="692" y2="225"/>
+      <line x1="894" y1="225" x2="910" y2="225"/>
+      <line x1="1112" y1="225" x2="1128" y2="225"/>
+      <line x1="1330" y1="225" x2="1346" y2="225"/>
+    </g>
+  </g>
+
+  <!-- cross-cutting planes -->
+  <text x="40" y="342" class="zone" fill="#12203a">CROSS-CUTTING PLANES — applied to every request, in every environment</text>
+
+  <!-- Security -->
+  <g transform="translate(40,358)">
+    <rect width="1540" height="150" rx="10" fill="#fbeceb" stroke="#c0392b"/>
+    <rect width="1540" height="34" rx="10" fill="#c0392b"/>
+    <text x="16" y="23" class="chip" font-weight="700">SECURITY &amp; ACCESS</text>
+    <text x="16" y="58" class="bd">• Identity-only permissions — Entra ID SSO + SCIM; least-privilege, read-only Databricks service principal (SELECT only) per environment; access never granted from chat (codes, role-play, "my manager said")</text>
+    <text x="16" y="80" class="bd">• Network: Private Link / VNet, in-tenant traffic to Azure OpenAI and Databricks, no public egress, NSGs   • Secrets: Azure Key Vault + Databricks secret scopes (rotation), none in code</text>
+    <text x="16" y="102" class="bd">• Rate limiting &amp; token quotas per user/role   • Concurrency caps + admission control   • Encryption in transit &amp; at rest</text>
+    <text x="16" y="124" class="bd">• DB Shield: read-only SQL (AST allow-list, no DML/DDL, single statement, row/cost limits) · Prompt Shield: jailbreak + indirect-injection defense (input &amp; data)</text>
+  </g>
+
+  <!-- Resilience -->
+  <g transform="translate(40,518)">
+    <rect width="1540" height="126" rx="10" fill="#eaf6ee" stroke="#1f7a43"/>
+    <rect width="1540" height="34" rx="10" fill="#1f7a43"/>
+    <text x="16" y="23" class="chip" font-weight="700">RESILIENCE, SCALE &amp; AVAILABILITY (no single point of failure)</text>
+    <text x="16" y="58" class="bd">• Autoscaling: Databricks Model Serving + Serverless SQL Warehouse + horizontal app tier · warm minimum replicas (no cold start) · multi-AZ</text>
+    <text x="16" y="80" class="bd">• Retries with backoff · circuit breakers · timeouts · bulkheads/queues for spikes · idempotent calls</text>
+    <text x="16" y="102" class="bd">• Graceful fallbacks: Genie → deterministic SQL template · Azure OpenAI → alternate deployment/region (Mosaic AI Gateway) or cached answer · stale EDP → live-SAP · DR runbook (Databricks Asset Bundles / IaC rebuild)</text>
+  </g>
+
+  <!-- Governance -->
+  <g transform="translate(40,654)">
+    <rect width="1540" height="150" rx="10" fill="#f0ebfa" stroke="#6b4fbb"/>
+    <rect width="1540" height="34" rx="10" fill="#6b4fbb"/>
+    <text x="16" y="23" class="chip" font-weight="700">GOVERNANCE &amp; COMPLIANCE</text>
+    <text x="16" y="58" class="bd">• Unity Catalog: isolated per-environment catalogs (mccain_dev / mccain_qa / mccain_prod), grants, row-level security (sales org / region), column masking (pricing, margin, cost, PII), lineage, tags, immutable audit</text>
+    <text x="16" y="80" class="bd">• EDP source, read-only (SAP untouched): Fact.SalesOrder, Fact.Delivery, Fact.Shipment, Fact.InventoryBalance, Fact.Sellin, Fact.PurchaseOrder + Dim Plant / Customer / Product / Sales Org / Calendar</text>
+    <text x="16" y="102" class="bd">• Model governance: MLflow Model Registry + promotion approval · versioned prompts (source-controlled) · Architecture Decision Records · Dev → QA → Prod promotion via Databricks Asset Bundles + Git</text>
+    <text x="16" y="124" class="bd">• Compliance: data stays in-tenant (Private Link), retention policy, quarterly access reviews, GDPR alignment · centralized policy &amp; cost attribution via Mosaic AI Gateway</text>
+  </g>
+
+  <!-- Observability -->
+  <g transform="translate(40,814)">
+    <rect width="1540" height="150" rx="10" fill="#fdf4e3" stroke="#c9821a"/>
+    <rect width="1540" height="34" rx="10" fill="#c9821a"/>
+    <text x="16" y="23" class="chip" font-weight="700">OBSERVABILITY &amp; EVALUATION</text>
+    <text x="16" y="58" class="bd">• MLflow 3 tracing on every run: route, tool calls, generated SQL, retrieved chunks, tokens, latency, cost · OpenTelemetry across app → agent → tools → Azure OpenAI</text>
+    <text x="16" y="80" class="bd">• KPIs: cost per resolution, success rate, time-to-answer, tool-call accuracy, steps-to-success, loop rate, token usage, groundedness / hallucination rate</text>
+    <text x="16" y="102" class="bd">• Databricks SQL / Genie &amp; admin dashboards (Databricks Apps) · SLO alerting on breach · structured PII-redacted logs to Delta / Azure Monitor · thumbs-up/down feedback loop · drift &amp; online monitoring</text>
+    <text x="16" y="124" class="bd">• Evaluation gate: golden-set (functional + security/jailbreak scenarios) scored by Mosaic AI Agent Evaluation — blocks any release that regresses accuracy, grounding or a guardrail</text>
+  </g>
+
+  <text x="40" y="1000" class="sub" font-style="italic">Defense in depth: a failure or bypass at any one layer is contained by the next — gateway, prompt shield, agent routing, DB shield, Unity Catalog row/column security, and output guardrails are independent controls.</text>
+  <text x="40" y="1024" class="lbl">Stack — Databricks: Workspace · Unity Catalog · Model Serving · Genie · MLflow · Vector Search (later phase) · Databricks Apps · Asset Bundles · Repos · databricks-sdk</text>
+  <text x="40" y="1044" class="lbl">Python / Azure: FastAPI · pydantic · httpx · tenacity · pybreaker · aiolimiter/slowapi · azure-ai-contentsafety · presidio · sqlglot · opentelemetry · azure-identity/keyvault · Git (Azure DevOps)</text>
+</svg>
