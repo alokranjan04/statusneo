@@ -14,7 +14,7 @@
   </defs>
   <rect width="1620" height="1140" fill="#f4f6fa"/>
   <text x="40" y="46" class="title">McCain · Agentic Order Status — Databricks-Native Reference Architecture</text>
-  <text x="40" y="70" class="sub">Defense-in-depth request lifecycle on Databricks (Mosaic AI, Genie, Unity Catalog) + Azure · Dev → QA → Prod via Databricks Asset Bundles · guardrails, governance, observability &amp; security by design</text>
+  <text x="40" y="70" class="sub">Defense-in-depth request lifecycle on Databricks (Genie, Model Serving, Unity Catalog) + Azure · Dev → QA → Prod via Databricks Asset Bundles · guardrails, governance, observability &amp; security by design</text>
 
   <!-- Legend -->
   <g transform="translate(1180,34)">
@@ -69,10 +69,10 @@
     <g transform="translate(694,150)">
       <rect width="200" height="150" rx="10" fill="#fff3f1" stroke="#FF3621"/>
       <text x="14" y="26" class="bt">④ Agent</text>
-      <text x="14" y="48" class="bd">Mosaic AI Agent Fmwk</text>
+      <text x="14" y="48" class="bd">Agent orchestration on</text>
       <text x="14" y="66" class="bd">Databricks Model Serving</text>
-      <text x="14" y="84" class="bd">Mosaic AI Gateway → Azure</text>
-      <text x="14" y="100" class="bd">OpenAI (small→large) + embed</text>
+      <text x="14" y="84" class="bd">Calls Azure OpenAI</text>
+      <text x="14" y="100" class="bd">(small→large) + embed</text>
       <text x="14" y="124" class="bd">Deterministic routing</text>
     </g>
     <!-- 5 Tools + DB shield -->
@@ -137,7 +137,7 @@
     <text x="16" y="23" class="chip" font-weight="700">RESILIENCE, SCALE &amp; AVAILABILITY (no single point of failure)</text>
     <text x="16" y="58" class="bd">• Autoscaling: Databricks Model Serving + Serverless SQL Warehouse + horizontal app tier · warm minimum replicas (no cold start) · multi-AZ</text>
     <text x="16" y="80" class="bd">• Retries with backoff · circuit breakers · timeouts · bulkheads/queues for spikes · idempotent calls</text>
-    <text x="16" y="102" class="bd">• Graceful fallbacks: Genie → deterministic SQL template · Azure OpenAI → alternate deployment/region (Mosaic AI Gateway) or cached answer · stale EDP → live-SAP · DR runbook (Databricks Asset Bundles / IaC rebuild)</text>
+    <text x="16" y="102" class="bd">• Graceful fallbacks: Genie → deterministic SQL template · Azure OpenAI → alternate deployment/region or cached answer · stale EDP → live-SAP · DR runbook (Databricks Asset Bundles / IaC rebuild)</text>
   </g>
 
   <!-- Governance -->
@@ -148,7 +148,7 @@
     <text x="16" y="58" class="bd">• Unity Catalog: isolated per-environment catalogs (mccain_dev / mccain_qa / mccain_prod), grants, row-level security (sales org / region), column masking (pricing, margin, cost, PII), lineage, tags, immutable audit</text>
     <text x="16" y="80" class="bd">• EDP source, read-only (SAP untouched): Fact.SalesOrder, Fact.Delivery, Fact.Shipment, Fact.InventoryBalance, Fact.Sellin, Fact.PurchaseOrder + Dim Plant / Customer / Product / Sales Org / Calendar</text>
     <text x="16" y="102" class="bd">• Model governance: MLflow Model Registry + promotion approval · versioned prompts (source-controlled) · Architecture Decision Records · Dev → QA → Prod promotion via Databricks Asset Bundles + Git</text>
-    <text x="16" y="124" class="bd">• Compliance: data stays in-tenant (Private Link), retention policy, quarterly access reviews, GDPR alignment · centralized policy &amp; cost attribution via Mosaic AI Gateway</text>
+    <text x="16" y="124" class="bd">• Compliance: data stays in-tenant (Private Link), retention policy, quarterly access reviews, GDPR alignment · centralized cost attribution via Azure OpenAI usage &amp; Databricks billing tags</text>
   </g>
 
   <!-- Observability -->
@@ -159,7 +159,7 @@
     <text x="16" y="58" class="bd">• MLflow 3 tracing on every run: route, tool calls, generated SQL, retrieved chunks, tokens, latency, cost · OpenTelemetry across app → agent → tools → Azure OpenAI</text>
     <text x="16" y="80" class="bd">• KPIs: cost per resolution, success rate, time-to-answer, tool-call accuracy, steps-to-success, loop rate, token usage, groundedness / hallucination rate</text>
     <text x="16" y="102" class="bd">• Databricks SQL / Genie &amp; admin dashboards (Databricks Apps) · SLO alerting on breach · structured PII-redacted logs to Delta / Azure Monitor · thumbs-up/down feedback loop · drift &amp; online monitoring</text>
-    <text x="16" y="124" class="bd">• Evaluation gate: golden-set (functional + security/jailbreak scenarios) scored by Mosaic AI Agent Evaluation — blocks any release that regresses accuracy, grounding or a guardrail</text>
+    <text x="16" y="124" class="bd">• Evaluation gate: golden-set (functional + security/jailbreak scenarios) scored via Databricks MLflow evaluation — blocks any release that regresses accuracy, grounding or a guardrail</text>
   </g>
 
   <text x="40" y="1000" class="sub" font-style="italic">Defense in depth: a failure or bypass at any one layer is contained by the next — gateway, prompt shield, agent routing, DB shield, Unity Catalog row/column security, and output guardrails are independent controls.</text>
