@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>McCain Order Assist — UI Prototype</title>
+<style>
+  :root{--red:#E23A2E;--ink:#12203a;--sub:#5b6b80;--line:#e2e7ef;--bg:#f4f6fa;--az:#0078D4;--grn:#2e9e5b;}
+  *{box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
+  body{margin:0;background:var(--bg);color:var(--ink)}
+  .note{max-width:1120px;margin:14px auto 0;color:var(--sub);font-size:13px;padding:0 16px}
+  .app{max-width:1120px;margin:10px auto 30px;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 6px 24px rgba(20,32,58,.06)}
+  header{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);background:#fff}
+  .logo{width:30px;height:30px;border-radius:8px;background:var(--red);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center}
+  header h1{font-size:16px;margin:0}
+  header .sub{font-size:12px;color:var(--sub)}
+  .spacer{flex:1}
+  .chip{font-size:11.5px;padding:4px 10px;border-radius:20px;background:#eef2fb;color:var(--az);font-weight:700}
+  .chip.g{background:#eaf6ee;color:var(--grn)}
+  .avatar{width:30px;height:30px;border-radius:50%;background:#dbe4f0;color:#33465f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+  .body{display:grid;grid-template-columns:230px 1fr}
+  .side{border-right:1px solid var(--line);padding:16px;background:#fbfcfe}
+  .side h3{font-size:11px;letter-spacing:.6px;color:var(--sub);text-transform:uppercase;margin:6px 0 8px}
+  .side .item{font-size:12.5px;color:#2b3a52;padding:8px 10px;border-radius:8px;margin-bottom:6px;background:#fff;border:1px solid var(--line);cursor:default}
+  .side .item:hover{border-color:#c9d4ea}
+  .chat{display:flex;flex-direction:column;height:640px}
+  .thread{flex:1;overflow:auto;padding:20px 22px}
+  .row{display:flex;margin-bottom:18px}
+  .row.me{justify-content:flex-end}
+  .bubble{max-width:76%;padding:12px 14px;border-radius:14px;font-size:13.5px;line-height:1.5}
+  .me .bubble{background:var(--az);color:#fff;border-bottom-right-radius:4px}
+  .ai .bubble{background:#f3f6fb;border:1px solid var(--line);border-bottom-left-radius:4px}
+  .card{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+  .card .hd{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#fbfcfe;border-bottom:1px solid var(--line);font-weight:700;font-size:12.5px}
+  .badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px}
+  .badge.delay{background:#fdecea;color:var(--red)}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;padding:10px 12px;font-size:12.5px}
+  .kv div span{color:var(--sub)}
+  .cite{margin-top:8px;font-size:11.5px;color:var(--sub)}
+  .cite b{color:#33465f}
+  .meta{display:flex;align-items:center;gap:14px;margin-top:9px;font-size:11.5px;color:var(--sub)}
+  .meta a{color:var(--az);text-decoration:none}
+  .thumb{cursor:default;color:#9aa7ba}
+  table.res{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px}
+  table.res th,table.res td{border:1px solid var(--line);padding:6px 9px;text-align:left}
+  table.res th{background:#fbfcfe;color:#33465f}
+  .composer{border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:10px;align-items:center;background:#fff}
+  .composer .in{flex:1;border:1px solid var(--line);border-radius:22px;padding:10px 16px;color:#8895a8;font-size:13px}
+  .send{background:var(--red);color:#fff;border:none;border-radius:22px;padding:10px 18px;font-weight:700;font-size:13px}
+  .disc{font-size:11px;color:var(--sub);text-align:center;padding:0 16px 12px}
+</style>
+</head>
+<body>
+<div class="note">UI prototype (mockup) — McCain Order Assist, embedded in the existing MCX chat. Shows a role-scoped, grounded, cited answer with an order-status card and 2-hour data-freshness. Not a live app.</div>
+<div class="app">
+  <header>
+    <div class="logo">M</div>
+    <div>
+      <h1>McCain Order Assist</h1>
+      <div class="sub">in MCX · powered by Genie + Azure AI Foundry</div>
+    </div>
+    <div class="spacer"></div>
+    <span class="chip g">Role: CS Agent</span>
+    <span class="chip">Region: EMENA-GB</span>
+    <div class="avatar">AK</div>
+  </header>
+  <div class="body">
+    <aside class="side">
+      <h3>FAQs</h3>
+      <div class="item">Where is order [ID]?</div>
+      <div class="item">Which orders haven't shipped?</div>
+      <div class="item">What's the returns policy?</div>
+      <div class="item">Orders below reorder point</div>
+      <h3 style="margin-top:16px">Recent</h3>
+      <div class="item">Status of order 4500123</div>
+      <div class="item">Top 5 SKUs by revenue</div>
+      <div class="item">Shortages for GB last week</div>
+    </aside>
+    <section class="chat">
+      <div class="thread">
+
+        <div class="row me"><div class="bubble">Is order 4500123 for Acme delayed, and what does our returns policy allow if it is?</div></div>
+
+        <div class="row ai"><div class="bubble">
+          Order <b>4500123</b> for <b>Acme Foods</b> is currently <b>delayed</b>. The delivery is created but the shipment hasn't been scheduled yet.
+          <div class="card">
+            <div class="hd">Order 4500123 · Acme Foods <span class="spacer"></span><span class="badge delay">DELAYED</span></div>
+            <div class="kv">
+              <div><span>Status</span><br>Delivery created, not shipped</div>
+              <div><span>Ordered / confirmed</span><br>1,200 / 1,050 cases</div>
+              <div><span>Planned load (PGI)</span><br>14 Jul (past due)</div>
+              <div><span>Sales org</span><br>GB01</div>
+            </div>
+          </div>
+          <div class="cite">On returns: for a delayed/short delivery, the customer may request a credit or re-delivery within the agreed window. <b>Source: Returns &amp; Quality Policy · §3.2</b></div>
+          <div class="meta">
+            <span>Data as of 14:00 (refreshed every 2h)</span>
+            <a href="#">View SQL</a>
+            <span class="thumb">&#9650; helpful</span><span class="thumb">&#9660;</span>
+          </div>
+        </div></div>
+
+        <div class="row me"><div class="bubble">Show me the top 5 SKUs by total revenue.</div></div>
+
+        <div class="row ai"><div class="bubble">
+          Here are the top 5 SKUs by total revenue (your region):
+          <table class="res">
+            <tr><th>SKU</th><th>Product</th><th>Revenue</th></tr>
+            <tr><td>SKU-1001</td><td>Fries 9mm 2.5kg</td><td>£184,320</td></tr>
+            <tr><td>SKU-1044</td><td>Wedges 2kg</td><td>£152,880</td></tr>
+            <tr><td>SKU-1210</td><td>Hash Brown 1.5kg</td><td>£141,050</td></tr>
+            <tr><td>SKU-1007</td><td>Fries 12mm 2.5kg</td><td>£133,600</td></tr>
+            <tr><td>SKU-1188</td><td>Rosti 1.8kg</td><td>£118,940</td></tr>
+          </table>
+          <div class="meta"><span>Data as of 14:00 · read-only</span><a href="#">View SQL</a><span class="thumb">&#9650;</span><span class="thumb">&#9660;</span></div>
+        </div></div>
+
+        <div class="row ai"><div class="bubble" style="background:#fff8e8;border-color:#ecdca0">
+          <b>Note:</b> I can only see orders for your region (EMENA-GB). If you need another region, ask an admin for access.
+        </div></div>
+
+      </div>
+      <div class="composer">
+        <div class="in">Ask about an order, delivery, stock, shortage or billing…</div>
+        <button class="send">Send</button>
+      </div>
+      <div class="disc">Answers are grounded in governed EDP data and cite their source. The assistant is read-only and will say when it doesn't have the information.</div>
+    </section>
+  </div>
+</div>
+</body>
+</html>
