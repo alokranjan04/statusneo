@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Meridian — McCain Order Status Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cambria&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#12203A; --navy2:#1B2E4F; --sub:#5B6472; --sub-lt:#8A94A6;
+    --bg:#F4F6FA; --surface:#FFFFFF; --border:#E1E5EE;
+    --primary:#FFB300; --primary-dark:#8A5D00; --primary-hover:#E6A200; --primary-bg:#FFF8E6;
+    --red:#FF3621; --red-bg:#FFF3F1;
+    --azure:#0078D4; --azure-bg:#EAF2FB;
+    --green:#1F7A43; --green-bg:#EAF6EE;
+    --amber:#C9821A; --amber-bg:#FDF4E3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  html,body{height:100%;}
+  body{background:var(--bg);color:var(--navy);overflow:hidden;}
+  .app{display:flex;height:100vh;}
+
+  /* ===== Sidebar ===== */
+  .sidebar{width:250px;flex:none;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:22px 18px;}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;padding:0 4px;}
+  .brand .mark{width:36px;height:36px;border-radius:10px;background:var(--navy);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;font-family:'Cambria',serif;flex:none;}
+  .brand .name{font-size:17px;font-weight:800;letter-spacing:-.3px;line-height:1.15;}
+  .brand .name small{display:block;font-size:10.5px;font-weight:600;color:var(--sub-lt);letter-spacing:.4px;text-transform:uppercase;margin-top:1px;}
+
+  .nav{display:flex;flex-direction:column;gap:3px;margin-bottom:20px;}
+  .nav a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--sub);padding:9px 12px;border-radius:9px;font-weight:600;font-size:13.5px;transition:.15s;}
+  .nav a .ic{width:17px;text-align:center;font-size:14px;opacity:.85;}
+  .nav a:hover{background:#F3F4F6;color:var(--navy);}
+  .nav a.active{background:var(--primary-bg);color:#8A5D00;}
+  .nav a.active .ic{opacity:1;}
+
+  .side-section{margin-top:6px;}
+  .side-h{font-size:10.5px;letter-spacing:.6px;color:var(--sub-lt);text-transform:uppercase;font-weight:700;margin:14px 4px 8px;}
+  .side-item{font-size:12px;color:#33465F;padding:8px 10px;border-radius:8px;margin-bottom:5px;background:#FBFCFE;border:1px solid var(--border);cursor:pointer;transition:.15s;line-height:1.35;}
+  .side-item:hover{border-color:#C9D4EA;background:#fff;}
+
+  .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border);}
+  .scope-card{background:var(--navy);border-radius:12px;padding:13px 14px;color:#fff;}
+  .scope-card .lbl{font-size:9.5px;letter-spacing:.6px;text-transform:uppercase;color:#9FB0CC;font-weight:700;margin-bottom:6px;}
+  .scope-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;padding:3px 0;}
+  .scope-row b{font-weight:700;}
+  .scope-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;box-shadow:0 0 0 3px rgba(31,122,67,.25);}
+  .scope-note{font-size:10.5px;color:#B9C6DE;margin-top:8px;line-height:1.45;}
+
+  /* ===== Main ===== */
+  .main{flex:1;display:flex;flex-direction:column;height:100%;min-width:0;}
+  .topbar{height:64px;flex:none;display:flex;align-items:center;padding:0 28px;border-bottom:1px solid var(--border);background:var(--surface);gap:14px;}
+  .topbar .ttl{font-size:15px;font-weight:800;}
+  .topbar .ttl-sub{font-size:11.5px;color:var(--sub-lt);font-weight:500;margin-top:1px;}
+  .env-pill{margin-left:10px;font-size:10.5px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--amber-bg);color:var(--amber);letter-spacing:.2px;}
+  .topbar .spacer{flex:1;}
+  .fresh-pill{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--sub);background:#FBFCFE;border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-weight:500;}
+  .fresh-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .profile{display:flex;align-items:center;gap:10px;margin-left:18px;}
+  .profile .who{text-align:right;}
+  .profile .who .n{font-size:12.5px;font-weight:700;line-height:1.2;}
+  .profile .who .r{font-size:10.5px;color:var(--sub-lt);}
+  .avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#FFB300,#FF8A00);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none;}
+
+  /* ===== Chat area ===== */
+  .chat-scroll{flex:1;overflow-y:auto;padding:36px 40px 150px;}
+  .chat-inner{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:26px;}
+
+  .welcome{text-align:center;margin:26px auto 8px;max-width:760px;}
+  .welcome h1{font-family:'Cambria',serif;font-size:34px;font-weight:800;letter-spacing:-.5px;line-height:1.18;color:var(--navy);}
+  .welcome h1 span{color:var(--primary-dark);}
+  .welcome p{color:var(--sub);font-size:14.5px;margin-top:10px;margin-bottom:30px;}
+
+  .domain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:left;}
+  .domain-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:15px 16px;cursor:pointer;transition:.15s;box-shadow:0 2px 5px rgba(18,32,58,.03);}
+  .domain-card:hover{border-color:var(--primary);box-shadow:0 10px 18px -8px rgba(255,179,0,.35);transform:translateY(-2px);}
+  .domain-card .tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--primary-dark);background:var(--primary-bg);padding:2px 8px;border-radius:20px;margin-bottom:9px;}
+  .domain-card .q{font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4;}
+
+  /* ===== Messages ===== */
+  .row{display:flex;width:100%;}
+  .row.me{justify-content:flex-end;}
+  .row.sys{justify-content:center;}
+  .bubble-user{max-width:70%;background:var(--primary);color:#3B2900;font-weight:600;padding:12px 17px;border-radius:16px;border-bottom-right-radius:4px;font-size:14px;line-height:1.5;box-shadow:0 3px 8px rgba(255,179,0,.25);}
+
+  .ai-wrap{max-width:100%;width:100%;display:flex;gap:12px;align-items:flex-start;}
+  .ai-avatar{width:30px;height:30px;border-radius:9px;background:var(--navy);color:var(--primary);flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;font-family:'Cambria',serif;margin-top:2px;}
+  .ai-col{flex:1;min-width:0;}
+  .ai-text{background:var(--surface);border:1px solid var(--border);padding:12px 17px;border-radius:16px;border-bottom-left-radius:4px;font-size:14px;line-height:1.55;color:var(--navy);display:inline-block;box-shadow:0 2px 4px rgba(18,32,58,.03);margin-bottom:12px;}
+
+  .card{border:1px solid var(--border);border-radius:13px;overflow:hidden;background:var(--surface);box-shadow:0 4px 10px -4px rgba(18,32,58,.06);margin-bottom:12px;}
+  .card .hd{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#FBFCFE;border-bottom:1px solid var(--border);font-weight:700;font-size:13px;}
+  .card .hd .spacer{flex:1;}
+  .card .bd{padding:16px;}
+  .badge{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.2px;}
+  .badge.delay{background:var(--red-bg);color:var(--red);}
+  .badge.ontime{background:var(--green-bg);color:var(--green);}
+  .badge.hold{background:var(--amber-bg);color:var(--amber);}
+
+  /* order lifecycle progress */
+  .lifecycle{margin:2px 0 16px;}
+  .lifecycle .track{display:flex;height:6px;border-radius:4px;overflow:hidden;background:var(--border);margin-bottom:9px;}
+  .lifecycle .track .fill{height:100%;background:linear-gradient(90deg,#FFB300,#FF8A00);}
+  .lifecycle .stages{display:flex;justify-content:space-between;font-size:9.5px;color:var(--sub-lt);font-weight:600;}
+  .lifecycle .stages .on{color:var(--navy);font-weight:800;}
+
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:12px 26px;font-size:12.5px;margin-top:4px;}
+  .kv .lbl{color:var(--sub-lt);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;font-weight:700;margin-bottom:3px;}
+  .kv .val{font-weight:600;color:var(--navy);}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px;}
+  .stat-box{background:#FBFCFE;border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .stat-box .lbl{font-size:10.5px;color:var(--sub-lt);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px;}
+  .stat-box .val{font-size:20px;font-weight:800;color:var(--navy);}
+  .stat-box .val.hl{color:var(--green);}
+
+  table.res{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.res th,table.res td{border:1px solid var(--border);padding:8px 11px;text-align:left;}
+  table.res th{background:#FBFCFE;color:#33465F;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.2px;}
+  table.res tr:nth-child(even) td{background:#FCFDFE;}
+
+  .cite-box{display:flex;gap:8px;align-items:flex-start;background:var(--azure-bg);border:1px solid #CFE3F7;border-radius:10px;padding:10px 13px;font-size:12px;color:#2B4E70;line-height:1.5;margin-top:2px;}
+  .cite-box b{color:var(--azure);}
+
+  .meta-row{display:flex;align-items:center;gap:14px;margin-top:11px;font-size:11px;color:var(--sub-lt);flex-wrap:wrap;}
+  .meta-row a{color:var(--azure);text-decoration:none;font-weight:600;}
+  .meta-row .fb{cursor:pointer;color:#B7C1D1;font-size:12px;}
+  .meta-row .fb:hover{color:var(--sub);}
+
+  .followups{display:flex;gap:9px;flex-wrap:wrap;margin-top:2px;}
+  .chip-btn{background:#fff;border:1.5px solid var(--primary);color:#8A5D00;padding:7px 14px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;}
+  .chip-btn:hover{background:var(--primary);color:#3B2900;}
+
+  .sys-note{max-width:640px;text-align:center;background:var(--amber-bg);border:1px solid #EFD9A8;color:#7A5100;font-size:12px;padding:10px 18px;border-radius:12px;line-height:1.5;}
+  .sys-note b{font-weight:800;}
+
+  /* typing / loading */
+  .thinking{display:flex;align-items:center;gap:10px;padding:9px 4px;color:var(--sub-lt);font-size:12.5px;font-weight:500;}
+  .dots{display:flex;gap:4px;}
+  .dots span{width:6px;height:6px;border-radius:50%;background:var(--sub-lt);animation:bounce 1.3s infinite ease-in-out both;}
+  .dots span:nth-child(1){animation-delay:-.28s;}
+  .dots span:nth-child(2){animation-delay:-.14s;}
+  @keyframes bounce{0%,80%,100%{transform:scale(0);}40%{transform:scale(1);}}
+
+  /* ===== Composer ===== */
+  .composer-wrap{position:absolute;left:250px;right:0;bottom:0;padding:18px 40px 22px;background:linear-gradient(transparent,var(--bg) 30%);pointer-events:none;}
+  .composer{max-width:880px;margin:0 auto;pointer-events:auto;}
+  .input-wrap{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:26px;padding:6px 6px 6px 20px;box-shadow:0 10px 24px -8px rgba(18,32,58,.12);transition:.15s;}
+  .input-wrap:focus-within{border-color:var(--primary);box-shadow:0 10px 24px -8px rgba(255,179,0,.3);}
+  .input-wrap input{flex:1;border:none;outline:none;background:transparent;font-size:14px;padding:11px 0;color:var(--navy);}
+  .input-wrap input::placeholder{color:var(--sub-lt);}
+  .send-btn{background:var(--primary);color:#3B2900;border:none;border-radius:20px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer;transition:.15s;white-space:nowrap;}
+  .send-btn:hover{background:var(--primary-hover);}
+  .disc{text-align:center;font-size:10.5px;color:var(--sub-lt);margin-top:9px;}
+
+  ::-webkit-scrollbar{width:9px;}
+  ::-webkit-scrollbar-thumb{background:#D6DCE7;border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">M</div>
+      <div class="name">Meridian<small>McCain Order Assist</small></div>
+    </div>
+    <nav class="nav">
+      <a href="#" class="active"><span class="ic">&#9993;</span> Assistant</a>
+      <a href="#"><span class="ic">&#9635;</span> Dashboard</a>
+      <a href="#"><span class="ic">&#128230;</span> Orders</a>
+      <a href="#"><span class="ic">&#128666;</span> Shipments</a>
+      <a href="#"><span class="ic">&#9881;</span> Settings</a>
+    </nav>
+
+    <div class="side-section">
+      <div class="side-h">Suggested</div>
+      <div class="side-item" onclick="askQuestion(0)">Where is order 4500123?</div>
+      <div class="side-item" onclick="askQuestion(1)">Top 5 SKUs by revenue</div>
+      <div class="side-item" onclick="askQuestion(2)">On-hand stock, SKU 1044</div>
+    </div>
+    <div class="side-section">
+      <div class="side-h">Recent</div>
+      <div class="side-item" onclick="askQuestion(3)">Shortages for GB, last 7 days</div>
+      <div class="side-item">Orders on credit hold</div>
+    </div>
+
+    <div class="sidebar-foot">
+      <div class="scope-card">
+        <div class="lbl">Your access scope</div>
+        <div class="scope-row"><span><span class="scope-dot"></span>Role</span><b>CS Agent</b></div>
+        <div class="scope-row"><span style="margin-left:12px">Region</span><b>EMENA&nbsp;·&nbsp;GB01</b></div>
+        <div class="scope-note">Row &amp; column-level security via Unity Catalog — you only see orders and pricing for your scope.</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== Main ===== -->
+  <main class="main" style="position:relative;">
+    <div class="topbar">
+      <div>
+        <div class="ttl">Order Status Assistant</div>
+        <div class="ttl-sub">in MCX · powered by Genie on Databricks</div>
+      </div>
+      <span class="env-pill">Sprint 1 preview</span>
+      <div class="spacer"></div>
+      <div class="fresh-pill"><span class="dot"></span> EDP data as of 14:00 · refreshed every 2h</div>
+      <div class="profile">
+        <div class="who"><div class="n">Amara K.</div><div class="r">CS Agent · EMENA-GB</div></div>
+        <div class="avatar">AK</div>
+      </div>
+    </div>
+
+    <div class="chat-scroll" id="chatScroll">
+      <div class="chat-inner" id="chatInner">
+
+        <div id="welcome" class="welcome">
+          <h1>Where's my order? <span>Just ask.</span></h1>
+          <p>Grounded, cited answers from governed EDP data — read-only, role-scoped, refreshed every 2 hours.</p>
+          <div class="domain-grid">
+            <div class="domain-card" onclick="askQuestion(0)">
+              <span class="tag">ORDER STATUS</span>
+              <div class="q">"Is order 4500123 for Acme delayed?"</div>
+            </div>
+            <div class="domain-card" onclick="askQuestion(3)">
+              <span class="tag">SHORTAGES &amp; FILL-RATE</span>
+              <div class="q">"Which orders are short this week in GB?"</div>
+            </div>
+            <div class="domain-card" onclick="askQuestion(4)">
+              <span class="tag">SCHEDULING &amp; HOLDS</span>
+              <div class="q">"Why is order 4500198 on credit hold?"</div>
+            </div>
+            <div class="domain-card" onclick="askQuestion(2)">
+              <span class="tag">INVENTORY</span>
+              <div class="q">"On-hand stock for SKU 1044 at plant 4001?"</div>
+            </div>
+            <div class="domain-card" onclick="askQuestion(1)">
+              <span class="tag">BILLING &amp; INVOICING</span>
+              <div class="q">"Top 5 SKUs by revenue this month"</div>
+            </div>
+            <div class="domain-card" onclick="handleSendText('What can you help me with?')">
+              <span class="tag">PACKAGING &amp; COMPLIANCE</span>
+              <div class="q">"What's the pallet spec for SKU 1210?"</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="input-wrap">
+          <input id="chatInput" type="text" placeholder="Ask about an order, delivery, stock, shortage or billing…" onkeypress="handleEnter(event)"/>
+          <button class="send-btn" onclick="handleSend()">Ask Meridian</button>
+        </div>
+        <div class="disc">Answers are grounded in governed EDP data and cite their source. Read-only — Meridian will say when it doesn't know.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const chatInner = document.getElementById('chatInner');
+const chatScroll = document.getElementById('chatScroll');
+const welcome = document.getElementById('welcome');
+const chatInput = document.getElementById('chatInput');
+
+function scrollBottom(){ chatScroll.scrollTop = chatScroll.scrollHeight; }
+
+function appendUser(text){
+  const row = document.createElement('div');
+  row.className = 'row me';
+  row.innerHTML = `<div class="bubble-user"></div>`;
+  row.querySelector('.bubble-user').textContent = text;
+  chatInner.appendChild(row);
+  scrollBottom();
+}
+
+function appendAI(innerHtml){
+  const row = document.createElement('div');
+  row.className = 'row ai';
+  row.innerHTML = `<div class="ai-wrap"><div class="ai-avatar">M</div><div class="ai-col">${innerHtml}</div></div>`;
+  chatInner.appendChild(row);
+  scrollBottom();
+}
+
+function appendSys(html){
+  const row = document.createElement('div');
+  row.className = 'row sys';
+  row.innerHTML = `<div class="sys-note">${html}</div>`;
+  chatInner.appendChild(row);
+  scrollBottom();
+}
+
+let thinkingEl = null;
+function showThinking(label){
+  thinkingEl = document.createElement('div');
+  thinkingEl.className = 'row ai';
+  thinkingEl.innerHTML = `<div class="ai-wrap"><div class="ai-avatar">M</div><div class="ai-col">
+      <div class="thinking">${label} <span class="dots"><span></span><span></span><span></span></span></div>
+    </div></div>`;
+  chatInner.appendChild(thinkingEl);
+  scrollBottom();
+}
+function hideThinking(){ if(thinkingEl){ thinkingEl.remove(); thinkingEl=null; } }
+
+const RESPONSES = [
+  // 0 — Order status, delayed, lifecycle + citation
+  {
+    user: "Is order 4500123 for Acme delayed, and what does our returns policy allow if it is?",
+    thinkLabel: "Checking Genie · order_status_tool",
+    html: `
+      <div class="ai-text">Order <b>4500123</b> for <b>Acme Foods</b> is currently <b>delayed</b> — the delivery has been created but hasn't shipped yet.</div>
+      <div class="card">
+        <div class="hd">Order 4500123 · Acme Foods <span class="spacer"></span><span class="badge delay">DELAYED</span></div>
+        <div class="bd">
+          <div class="lifecycle">
+            <div class="track"><div class="fill" style="width:37%"></div></div>
+            <div class="stages">
+              <span class="on">Confirmed</span><span>Credit Cleared</span><span class="on">Processing</span><span>Ready to Ship</span><span>Shipped</span><span>In Transit</span><span>Delivered</span><span>Completed</span>
+            </div>
+          </div>
+          <div class="kv">
+            <div><div class="lbl">Status</div><div class="val">Delivery created, not shipped</div></div>
+            <div><div class="lbl">Ordered / Confirmed</div><div class="val">1,200 / 1,050 cases</div></div>
+            <div><div class="lbl">Planned load (PGI)</div><div class="val">14 Jul — past due</div></div>
+            <div><div class="lbl">Sales org</div><div class="val">GB01</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cite-box"><span>&#128220;</span><span>For a delayed or short delivery, the customer may request a credit or re-delivery within the agreed window. <b>Source: Returns &amp; Quality Policy · §3.2</b></span></div>
+      <div class="meta-row">
+        <span>Data as of 14:00 · refreshed every 2h</span>
+        <a href="#">View SQL</a>
+        <span class="fb">&#9650;</span><span class="fb">&#9660;</span>
+      </div>
+      <div class="followups">
+        <button class="chip-btn" onclick="handleSendText('Release the credit hold for 4500123')">Release credit hold</button>
+        <button class="chip-btn" onclick="handleSendText('Alert the receiving warehouse')">Alert receiving warehouse</button>
+        <button class="chip-btn" onclick="handleSendText('Show me similar delayed orders in GB01')">Similar delays in GB01</button>
+      </div>`
+  },
+  // 1 — Billing table
+  {
+    user: "Show me the top 5 SKUs by total revenue this month, my region.",
+    thinkLabel: "Checking Genie · billing_tool",
+    html: `
+      <div class="ai-text">Here are the top 5 SKUs by revenue in your region this month:</div>
+      <div class="card">
+        <div class="hd">Top SKUs by Revenue · EMENA-GB</div>
+        <div class="bd">
+          <table class="res">
+            <tr><th>SKU</th><th>Product</th><th>Revenue</th></tr>
+            <tr><td>SKU-1001</td><td>Fries 9mm 2.5kg</td><td>£184,320</td></tr>
+            <tr><td>SKU-1044</td><td>Wedges 2kg</td><td>£152,880</td></tr>
+            <tr><td>SKU-1210</td><td>Hash Brown 1.5kg</td><td>£141,050</td></tr>
+            <tr><td>SKU-1007</td><td>Fries 12mm 2.5kg</td><td>£133,600</td></tr>
+            <tr><td>SKU-1188</td><td>Rosti 1.8kg</td><td>£118,940</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>Data as of 14:00 · read-only</span>
+        <a href="#">View SQL</a>
+        <span class="fb">&#9650;</span><span class="fb">&#9660;</span>
+      </div>
+      <div class="followups">
+        <button class="chip-btn" onclick="handleSendText('Break this down by week')">Break down by week</button>
+        <button class="chip-btn" onclick="handleSendText('Compare to last month')">Compare to last month</button>
+      </div>`
+  },
+  // 2 — Inventory stats
+  {
+    user: "What's the current on-hand stock for SKU 1044 at plant 4001, and how many open orders exist against it?",
+    thinkLabel: "Checking Genie · inventory_tool",
+    html: `
+      <div class="ai-text">Here's the inventory position for SKU 1044 at Plant 4001:</div>
+      <div class="card">
+        <div class="hd">Inventory · SKU 1044 at Plant 4001 <span class="spacer"></span><span class="badge ontime">HEALTHY</span></div>
+        <div class="bd">
+          <div class="stat-grid">
+            <div class="stat-box"><div class="lbl">On-hand (cases)</div><div class="val">12,450</div></div>
+            <div class="stat-box"><div class="lbl">Open orders (cases)</div><div class="val">3,200</div></div>
+            <div class="stat-box"><div class="lbl">Available to promise</div><div class="val hl">9,250</div></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--sub);line-height:1.55;">Sufficient stock to fulfill all open orders for SKU 1044 at Plant 4001 — no shortages projected over the next 14 days based on current demand.</div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>Data as of 14:00 · refreshed every 2h</span>
+        <a href="#">View SQL</a>
+        <span class="fb">&#9650;</span><span class="fb">&#9660;</span>
+      </div>
+      <div class="followups">
+        <button class="chip-btn" onclick="handleSendText('Show me the open orders breakdown')">Show open orders breakdown</button>
+        <button class="chip-btn" onclick="handleSendText('Check SKU 1188 at the same plant')">Check SKU 1188</button>
+      </div>`
+  },
+  // 3 — Shortages
+  {
+    user: "Which orders are short this week in GB — confirmed vs. ordered quantity gaps?",
+    thinkLabel: "Checking Genie · shortage_tool",
+    html: `
+      <div class="ai-text">I found 3 orders in GB01 with a confirmed quantity below what was ordered this week:</div>
+      <div class="card">
+        <div class="hd">Shortages · GB01, last 7 days</div>
+        <div class="bd">
+          <table class="res">
+            <tr><th>Order</th><th>Customer</th><th>Ordered</th><th>Confirmed</th><th>Gap</th></tr>
+            <tr><td>4500124</td><td>Greggs Foodservice</td><td>2,400</td><td>2,050</td><td style="color:var(--red);font-weight:700">-350</td></tr>
+            <tr><td>4500131</td><td>Bidfood UK</td><td>1,800</td><td>1,620</td><td style="color:var(--red);font-weight:700">-180</td></tr>
+            <tr><td>4500147</td><td>Brakes Group</td><td>900</td><td>720</td><td style="color:var(--red);font-weight:700">-180</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="cite-box"><span>&#128220;</span><span>Shortages above are driven by SKU 1001 &amp; SKU 1044 constrained capacity at Plant 4001 this week. <b>Source: Fact.SalesOrder vs. Fact.Delivery, joined on order line</b></span></div>
+      <div class="meta-row">
+        <span>Data as of 14:00 · refreshed every 2h</span>
+        <a href="#">View SQL</a>
+        <span class="fb">&#9650;</span><span class="fb">&#9660;</span>
+      </div>
+      <div class="followups">
+        <button class="chip-btn" onclick="handleSendText('Notify the account managers for these 3 orders')">Notify account managers</button>
+        <button class="chip-btn" onclick="handleSendText('What is driving the SKU 1001 constraint?')">What's driving SKU 1001 constraint?</button>
+      </div>`
+  },
+  // 4 — Credit hold / scheduling
+  {
+    user: "Why is order 4500198 on credit hold, and when will it release?",
+    thinkLabel: "Checking Genie · order_status_tool",
+    html: `
+      <div class="ai-text">Order <b>4500198</b> is on <b>credit hold</b> — it hasn't been blocked from delivery for a stock or scheduling reason.</div>
+      <div class="card">
+        <div class="hd">Order 4500198 · Nisa Retail <span class="spacer"></span><span class="badge hold">CREDIT HOLD</span></div>
+        <div class="bd">
+          <div class="lifecycle">
+            <div class="track"><div class="fill" style="width:18%;background:linear-gradient(90deg,#C9821A,#E0A63C)"></div></div>
+            <div class="stages">
+              <span class="on">Confirmed</span><span class="on">Credit Hold</span><span>Processing</span><span>Ready to Ship</span><span>Shipped</span><span>In Transit</span><span>Delivered</span><span>Completed</span>
+            </div>
+          </div>
+          <div class="kv">
+            <div><div class="lbl">Hold reason</div><div class="val">Credit limit exceeded</div></div>
+            <div><div class="lbl">Order value</div><div class="val">£8,420</div></div>
+            <div><div class="lbl">Sales org</div><div class="val">GB01</div></div>
+            <div><div class="lbl">Held since</div><div class="val">3 days ago</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="meta-row">
+        <span>Data as of 14:00 · refreshed every 2h</span>
+        <a href="#">View SQL</a>
+        <span class="fb">&#9650;</span><span class="fb">&#9660;</span>
+      </div>
+      <div class="followups">
+        <button class="chip-btn" onclick="handleSendText('Escalate to credit control')">Escalate to credit control</button>
+        <button class="chip-btn" onclick="handleSendText('Has this customer been on hold before?')">Prior hold history?</button>
+      </div>`
+  },
+];
+
+function askQuestion(i){
+  const r = RESPONSES[i];
+  if(!r) return;
+  if(welcome) welcome.style.display = 'none';
+  appendUser(r.user);
+  showThinking(r.thinkLabel);
+  setTimeout(() => {
+    hideThinking();
+    appendAI(r.html);
+    if(i === 0){
+      setTimeout(() => appendSys('<b>Scope notice:</b> I can only see orders for your assigned region (EMENA · GB01). Ask an admin if you need visibility into another region.'), 550);
+    }
+  }, 1250);
+}
+
+function handleSendText(text){
+  if(welcome) welcome.style.display = 'none';
+  appendUser(text);
+  showThinking('Checking Genie · routing your question');
+  setTimeout(() => {
+    hideThinking();
+    appendAI(`<div class="ai-text">This is an interactive prototype, so I don't have a live answer for that yet — in the deployed assistant this would route through Intent Parser → Genie (order_status_tool) against governed EDP data and come back grounded and cited, the same way the examples on the left do.</div>`);
+  }, 1200);
+}
+
+function handleSend(){
+  const text = chatInput.value.trim();
+  if(!text) return;
+  chatInput.value = '';
+  handleSendText(text);
+}
+function handleEnter(e){ if(e.key === 'Enter') handleSend(); }
+</script>
+</body>
+</html>
